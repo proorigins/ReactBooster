@@ -12,6 +12,7 @@ const testReducer = handleActions(
   {
       [testAction]: (state: any, {payload}: any) => ({
           ...state,
+          ...payload
       }),
   },
   initialState,
