@@ -1,39 +1,42 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.scss';
-import {BrowserRouter as Router, withRouter, Route, Link} from 'react-router-dom';
-import store from "./store/store";
-import {Provider} from "react-redux";
+import {useSelector} from "react-redux";
+import {ApplicationStateType} from "./reducers/applicationState/applicationState.type";
+import {authenticatedSelector} from "./reducers/userReducer/userReducerSelectors";
+import {AnonymousWrapper} from "./components/appAccess/anoymousLevel/AnonymousWrapper";
+import {AccessWrapper} from "./components/appAccess/accessLevel/accessWrapper";
+import LoadingPage from "./pages/loadingPage/loadingPage";
 
-const App = ({}) => {
+const App: React.FC = () => {
+    const authenticated = useSelector<ApplicationStateType, boolean>(state => authenticatedSelector(state));
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setLoading(false)
+        }, 3000)
+    }, []);
+
+    if (loading) {
+        return (
+            <LoadingPage />
+        )
+    }
+
+    if (authenticated) {
+        return (
+            <>
+                <AccessWrapper />
+            </>
+        )
+    }
+
     return (
-
-        <div className="App">
-            <Route path={"/home"} exact={true} render={(props: any) => {
-                return (
-                    <div>Home</div>
-                )
-            }}/>
-            <Route path={"/Login"} exact={true} render={(props: any) => {
-                return (
-                    <div>Login</div>
-                )
-            }}/>
-
-            {/* //links    */}
-            <Link to={"/home"}>Home</Link>
-            <Link to={"/login"}>Login</Link>
-        </div>
+        <>
+            <AnonymousWrapper />
+        </>
     );
 };
 
-const AppWithRouter = withRouter(App);
 
-const AppWithProvider = () => (
-    <Provider store={store}>
-        <Router>
-            <AppWithRouter />
-        </Router>
-    </Provider>
-);
-
-export default AppWithProvider;
+export default App;
